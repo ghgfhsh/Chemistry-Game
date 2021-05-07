@@ -3,7 +3,7 @@
 This is a chemistry game based game that I am currently working on. 
 
 Current working features: 
-* Liquid Simulation
+* Liquid Simulation(including pressure)
 * Solid wall placement - this block will be a physics devoid block for players to make hard barriers. 
 * Water placement
 
