@@ -91,16 +91,17 @@ public class LiquidSimulator
                 if (remainingMass < minMass)
                     continue;
 
-                if (x >= 1 && (particles[x - 1, y].particleType == ParticleType.empty || particles[x - 1, y].particleType == particleToSimulate)) //if the particle can flow left flow left
+                //handle left flow 
+                if (x >= 1 && (particles[x - 1, y].particleType == ParticleType.empty || particles[x - 1, y].particleType == particleToSimulate)) 
                 {
                     //calculate flow
-                    flow = (particles[x, y].mass - particles[x - 1, y].mass) / 4f;
+                    flow = (remainingMass - particles[x - 1, y].mass) / 4f;
                     if (flow > MinFlow) flow *= flowSpeed; // smooth flow by flow speed
 
                     //constrain the flow
                     flow = Mathf.Max(flow, 0);
-                    if (flow > Mathf.Min(MaxFlow, particles[x, y].mass))
-                        flow = Mathf.Min(MaxFlow, particles[x, y].mass);
+                    if (flow > Mathf.Min(MaxFlow, remainingMass))
+                        flow = Mathf.Min(MaxFlow, remainingMass);
 
                     //update values
                     if (flow != 0)
@@ -116,17 +117,17 @@ public class LiquidSimulator
                 if (remainingMass < minMass)
                     continue;
 
-
+                //handle right flow 
                 if (x + 1 < width && (particles[x + 1, y].particleType == ParticleType.empty || particles[x + 1, y].particleType == particleToSimulate)) // if the particle can flow right, flow right
                 {
                     //calculate flow
-                    flow = (particles[x, y].mass - particles[x + 1, y].mass) / 4f;
+                    flow = (remainingMass - particles[x + 1, y].mass) / 4f;
                     if (flow > MinFlow) flow *= flowSpeed; // smooth flow by flow speed
 
                     //constrain the flow
                     flow = Mathf.Max(flow, 0);
-                    if (flow > Mathf.Min(MaxFlow, particles[x, y].mass))
-                        flow = Mathf.Min(MaxFlow, particles[x, y].mass);
+                    if (flow > Mathf.Min(MaxFlow, remainingMass))
+                        flow = Mathf.Min(MaxFlow, remainingMass);
 
                     //update values
                     if (flow != 0)
@@ -135,6 +136,28 @@ public class LiquidSimulator
 
                         liquidValueChange[x, y] -= flow;
                         liquidValueChange[x + 1, y] += flow;
+                    }
+                }
+
+                //handle upwards flow
+                if (y + 1 < height && (particles[x, y + 1].particleType == ParticleType.empty || particles[x, y + 1].particleType == particleToSimulate))
+                {
+                    //calculate flow
+                    flow = remainingMass - CalculateVerticalCompression(remainingMass + particles[x, y + 1].mass);
+                    if (flow > MinFlow) flow *= flowSpeed; // smooth flow by flow speed
+
+                    //constrain the flow
+                    flow = Mathf.Max(flow, 0);
+                    if (flow > Mathf.Min(MaxFlow, remainingMass))
+                        flow = Mathf.Min(MaxFlow, remainingMass);
+
+                    //update values
+                    if (flow != 0)
+                    {
+                        remainingMass -= flow;
+
+                        liquidValueChange[x, y] -= flow;
+                        liquidValueChange[x, y + 1] += flow;
                     }
                 }
             }

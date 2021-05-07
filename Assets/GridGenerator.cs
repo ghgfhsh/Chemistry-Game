@@ -59,6 +59,9 @@ public class GridGenerator : MonoBehaviour
                 gridSprites[x, y].sprite = particleGrid[x, y].sprite;
                 gridSprites[x, y].gameObject.name = particleGrid[x, y].particleName + " mass: " + particleGrid[x, y].mass;
 
+                float colorChange = Mathf.Clamp((2f - particleGrid[x, y].mass), .5f, 1.1f);
+                gridSprites[x, y].color = new Color(colorChange, colorChange, colorChange);
+
             }
         }
     }
@@ -75,9 +78,15 @@ public class GridGenerator : MonoBehaviour
 
     public void SpawnObjectAtCell(ParticleType particleType, Vector2Int coords)
     {
-        particleGrid[coords.x, coords.y].ChangeParticleType(particleType);
-        gridSprites[coords.x, coords.y].sprite = particleGrid[coords.x, coords.y].sprite;
-        particleGrid[coords.x, coords.y].mass = 1f;
+        if (particleType == ParticleType.water && particleGrid[coords.x, coords.y].particleType == particleType)
+            particleGrid[coords.x, coords.y].mass += 1f;
+        else
+        {
+            particleGrid[coords.x, coords.y].ChangeParticleType(particleType);
+            gridSprites[coords.x, coords.y].sprite = particleGrid[coords.x, coords.y].sprite;
+            particleGrid[coords.x, coords.y].mass = 1f;
+        }
+
         DrawParticles();
     }
 
